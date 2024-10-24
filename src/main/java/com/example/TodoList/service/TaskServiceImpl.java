@@ -3,6 +3,7 @@ package com.example.TodoList.service;
 import com.example.TodoList.dto.TaskDTO;
 import com.example.TodoList.exception.TaskNotFoundException;
 import com.example.TodoList.model.Task;
+import com.example.TodoList.repository.TaskCustomRepository;
 import com.example.TodoList.repository.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,11 @@ import java.util.List;
 public class TaskServiceImpl implements TaskService{
     private final TaskRepository taskRepository;
 
+    private final TaskCustomRepository taskCustomRepository;
+
     @Autowired
-    public TaskServiceImpl(TaskRepository taskRepository){
+    public TaskServiceImpl(TaskRepository taskRepository,TaskCustomRepository taskCustomRepository){
+        this.taskCustomRepository = taskCustomRepository;
         this.taskRepository = taskRepository;
     }
 
@@ -61,13 +65,6 @@ public class TaskServiceImpl implements TaskService{
 
     @Override
     public List<Task> getListTasks(int limit, int minscore, int maxscore, boolean status) {
-        int count = 0;
-        List<Task> taskList = new ArrayList<>();
-        for (Task task : getAllTasks()){
-            if (task.isStatus() == status && task.getScore() >= minscore && task.getScore() <= maxscore) taskList.add(task);
-            count ++;
-            if (count >= limit) break;
-        }
-        return taskList;
+        return taskCustomRepository.getListTasks(limit,minscore,maxscore,status);
     }
 }
